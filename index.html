@@ -31,7 +31,6 @@
                     fontFamily: { inter: ['Inter', 'sans-serif'] },
                     animation: {
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
                         'glow': 'glow 2s ease-in-out infinite alternate',
                         'countdown-pulse': 'countdown-pulse 1s ease-in-out infinite alternate'
                     },
@@ -61,14 +60,13 @@
                 background: linear-gradient(135deg, rgba(102, 51, 153, 0.7), rgba(30, 64, 175, 0.7));
                 z-index: -1;
             }
-            .countdown-digit { position: relative; display: inline-block; min-width: 40px; }
             .card-flip { perspective: 1000px; cursor: pointer; }
             .bookmark-card { transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; position: relative; height: 100%; }
             .bookmark-front, .bookmark-back { backface-visibility: hidden; transition: all 0.6s ease; position: absolute; inset: 0; width: 100%; height: 100%; }
             .bookmark-back { transform: rotateY(180deg); }
             .bookmark-card.flipped { transform: rotateY(180deg); }
             .lock-overlay {
-                position: absolute; inset: 0; background: rgba(17, 24, 39, 0.83);
+                position: absolute; inset: 0; background: rgba(17, 24, 39, 0.85);
                 border-radius: inherit; display: flex; flex-direction: column;
                 align-items: center; justify-content: center; z-index: 10;
                 backdrop-filter: blur(4px); transition: opacity 0.3s ease;
@@ -86,7 +84,7 @@
         }
     </style>
 </head>
-<body class="font-inter bg-neutral-900 min-h-screen p-4 md:p-8 overflow-x-hidden">
+<body class="font-inter bg-neutral-900 min-h-screen p-4 md:p-8 overflow-x-hidden text-neutral-100">
     <div id="particles-js" class="fixed inset-0 z-0 opacity-30"></div>
     
     <div class="max-w-7xl mx-auto relative z-10">
@@ -118,74 +116,74 @@
         const EXAM_FIXED_DATE = new Date(2026, 0, 17);
         EXAM_FIXED_DATE.setHours(0, 0, 0, 0);
         
-        // 激勵語 (縮短顯示，不影響功能)
+        // 完整的 66 條激勵語
         const motivators = [
-            { zh: "不放棄就有希望，堅持到底方能成功。", en: "Where there is no giving up, there is hope." },
-            { zh: "每一滴汗水都不會白流，每一次堅持都會有回饋。", en: "No drop of sweat is shed in vain." },
-            { zh: "困難是暫時的，堅持是永恆的，勝利是必然的。", en: "Difficulties are temporary, perseverance is eternal." },
-            { zh: "即使步伐緩慢，只要不停止，終會抵達目的地。", en: "Even if the pace is slow, don’t stop." },
-            { zh: "挫折是成功的墊腳石，堅持是跨越的橋梁。", en: "Setbacks are stepping stones to success." },
-            { zh: "不忘初心，方得始終；執著前行，終見彩虹。", en: "Stay true to your original aspiration." },
-            { zh: "成功從不是一蹴而就，而是日復一日的堅持與積累。", en: "Success comes from daily perseverance." },
-            { zh: "縱有疾風驟雨，也要逆風而行，堅持心中的方向。", en: "Even in storms, walk against the wind." },
-            { zh: "堅持的路上或許孤獨，但抵達終點時的光芒，足以照亮所有辛勞。", en: "The light at the end illuminates all hardships." },
-            { zh: "以夢為馬，不負韶華；以筆為劍，書寫輝煌。", en: "Take dreams as horses, live up to youth." },
-            { zh: "夢想是前行的動力，努力是實現的階梯。", en: "Dreams are motivation, effort is the ladder." },
-            { zh: "不論夢想多麼遙遠，只要腳踏實地，終會觸手可及。", en: "Stay grounded, dreams will be reachable." },
-            { zh: "守住心中的夢想，不讓現實磨平棱角。", en: "Guard the dream in your heart." },
-            { zh: "每一個偉大的夢想，都始於一個勇敢的開始。", en: "Every great dream begins with a brave start." },
-            { zh: "用汗水澆灌夢想，用努力見證成長。", en: "Water dreams with sweat." },
-            { zh: "夢想從不偏心，它只眷顧敢於追求的人。", en: "Dreams only favor those who dare." },
-            { zh: "高三是夢想的起跑線，努力在拉近距離。", en: "Senior year is the starting line." },
-            { zh: "別讓遺憾留在明天，別讓夢想停在今天。", en: "Don’t let regrets stay for tomorrow." },
-            { zh: "你的夢想值得全力以赴，努力必有果實。", en: "Your dream is worth going all out for." },
-            { zh: "今朝埋頭苦讀，明日揚眉吐氣。", en: "Study hard today, hold your head high tomorrow." },
-            { zh: "高三不拼，何時拼？青春不搏，枉少年！", en: "If not fight now, when?" },
-            { zh: "把每一分鐘都用在刀刃上。", en: "Use every minute wisely." },
-            { zh: "拼搏的路上或許艱辛，但突破讓你更強。", en: "Every breakthrough makes you stronger." },
-            { zh: "不與他人比較，只與昨天的自己較量。", en: "Only compete with yourself yesterday." },
-            { zh: "放手一搏，給自己的青春一個無悔的交代。", en: "Give your youth a regretless explanation." },
-            { zh: "拼搏是青春最美的底色。", en: "Striving is the beautiful color of youth." },
-            { zh: "與時間賽跑，在舞臺上綻放光芒。", en: "Race against time and shine." },
-            { zh: "沒有等出來的輝煌，只有拼出來的精彩。", en: "Glory comes from striving, not waiting." },
-            { zh: "拿出拼搏的勇氣，戰勝一切阻礙。", en: "Summon courage to overcome obstacles." },
-            { zh: "壓力是動力的源泉，困境是成長的契機。", en: "Pressure is the source of motivation." },
-            { zh: "與其被壓力擊垮，不如轉化為力量。", en: "Turn pressure into power." },
-            { zh: "適度放鬆，張弛有度。", en: "Balance between tension and ease." },
-            { zh: "一次的失敗不算什麼，重要的是重新站起來。", en: "What matters is standing up again." },
-            { zh: "學會調整心態，把焦慮轉化為行動。", en: "Turn anxiety into action." },
-            { zh: "每一次考試都是一次檢驗，不是最終判決。", en: "Exams are tests, not judgments." },
-            { zh: "相信自己的實力，陽光總在風雨後。", en: "The sun comes after the rain." },
-            { zh: "壓力越大，潛能越大。", en: "Greater pressure, greater potential." },
-            { zh: "在挑戰中磨煉心智，在困難中變得堅強。", en: "Temper your mind in challenges." },
-            { zh: "不要糾結於過去，全力以赴創造未來。", en: "Go all out to create the future." },
-            { zh: "自律的人從不浪費時間。", en: "Self-disciplined people don't waste time." },
-            { zh: "把堅持變成習慣，成功水到渠成。", en: "Success comes when persistence is a habit." },
-            { zh: "別讓懶惰毀了你的潛能，自律才能自由。", en: "Self-discipline leads to freedom." },
-            { zh: "自律是為了給夢想騰出更多空間。", en: "Self-discipline makes room for dreams." },
-            { zh: "每天堅持計劃，時間會給你回報。", en: "Time will reward your consistency." },
-            { zh: "自律的背後，是對未來的負責。", en: "Responsibility for the future." },
-            { zh: "無人監督時依然努力，才是真自律。", en: "True self-discipline is internal." },
-            { zh: "不要被負面情緒左右，用積極能量感染他人。", en: "Infect others with positive energy." },
-            { zh: "每一個進步都值得慶祝，繼續前行。", en: "Every progress is worth celebrating." },
-            { zh: "樂觀的人總能在絕境中找到希望。", en: "Find hope in despair." },
-            { zh: "心態陽光，收穫成長與快樂。", en: "Gain growth with a sunny mindset." },
-            { zh: "不積跬步，無以至千里。", en: "Accumulate small steps." },
-            { zh: "知識在於積累，實力在於沉澱。", en: "Knowledge lies in accumulation." },
-            { zh: "相信自己，你比想象中更強大。", en: "You are stronger than you think." },
-            { zh: "自信是成功的基石。", en: "Self-confidence is the cornerstone." },
-            { zh: "自信是基於努力的底氣。", en: "Confidence based on hard work." },
-            { zh: "無論遇到什麼挑戰，告訴自己：我能行！", en: "Tell yourself: I can do it!" },
-            { zh: "你的實力足以撐起你的自信。", en: "Strength supports your confidence." },
-            { zh: "時間是最公平的裁判。", en: "Time is the fairest judge." },
-            { zh: "抓住時間的人，才能抓住成功。", en: "Seize time, seize success." },
-            { zh: "不要總是“等一下”，時間從不等人。", en: "Time never waits." },
-            { zh: "規劃時間，積少成多。", en: "Plan time, small gains add up." },
-            { zh: "早一分鐘開始，就多一分鐘積累。", en: "Starting earlier means more accumulation." },
-            { zh: "把握當下，才能創造無悔的未來。", en: "Seize the present for a better future." },
-            { zh: "時間見證成長，未來必將感謝現在的你。", en: "The future will thank you." },
-            { zh: "行動起來，才能創造奇蹟。", en: "Only actions create miracles." },
-            { zh: "用行動證明自己，用努力兌現夢想。", en: "Prove yourself with actions." }
+            { zh: "不放棄就有希望，堅持到底方能成功。", en: "Where there is no giving up, there is hope; only perseverance leads to success." },
+            { zh: "每一滴汗水都不會白流，每一次堅持都會有回饋。", en: "No drop of sweat is shed in vain; every persistence will be rewarded." },
+            { zh: "困難是暫時的，堅持是永恆的，勝利是必然的。", en: "Difficulties are temporary, perseverance is eternal, and victory is inevitable." },
+            { zh: "即使步伐緩慢，只要不停止，終會抵達目的地。", en: "Even if the pace is slow, as long as you don’t stop, you will eventually reach your destination." },
+            { zh: "挫折是成功的墊腳石，堅持是跨越的橋梁。", en: "Setbacks are stepping stones to success, and perseverance is the bridge to cross over." },
+            { zh: "不忘初心，方得始終；執著前行，終見彩虹。", en: "Stay true to your original aspiration, and you will achieve your ultimate goal; forge ahead with dedication, and you will finally see the rainbow." },
+            { zh: "成功從不是一蹴而就，而是日復一日的堅持與積累。", en: "Success never comes overnight, but from day after day of perseverance and accumulation." },
+            { zh: "縱有疾風驟雨，也要逆風而行，堅持心中的方向。", en: "Even in storms, we must walk against the wind and hold fast to the direction in our hearts." },
+            { zh: "堅持的路上或許孤獨，但抵達終點時的光芒，足以照亮所有辛勞。", en: "The road of perseverance may be lonely, but the light at the end is enough to illuminate all hardships." },
+            { zh: "以夢為馬，不負韶華；以筆為劍，書寫輝煌。", en: "Take dreams as horses, live up to the glorious youth; take pens as swords, write a brilliant future." },
+            { zh: "夢想是前行的動力，努力是實現的階梯。", en: "Dreams are the motivation to move forward, and hard work is the ladder to realization." },
+            { zh: "不論夢想多麼遙遠，只要腳踏實地，終會觸手可及。", en: "No matter how distant the dream is, as long as you keep your feet on the ground, you will eventually reach it." },
+            { zh: "守住心中的夢想，不讓現實磨平棱角，不讓困難擊敗熱情。", en: "Guard the dream in your heart, don’t let reality smooth your edges, and don’t let difficulties defeat your passion." },
+            { zh: "每一個偉大的夢想，都始於一個勇敢的開始和無數次的堅持。", en: "Every great dream begins with a brave start and countless persistences." },
+            { zh: "用汗水澆灌夢想，用努力見證成長，用實力開創未來。", en: "Water dreams with sweat, witness growth with hard work, and create the future with strength." },
+            { zh: "夢想從不偏心，它只眷顧那些敢於追求、勇於堅持的人。", en: "Dreams are never biased; they only favor those who dare to pursue and persist bravely." },
+            { zh: "高三是夢想的起跑線，每一次努力都在拉近與理想的距離。", en: "Senior year is the starting line of dreams; every effort is narrowing the distance to the ideal." },
+            { zh: "別讓遺憾留在明天，別讓夢想停在今天，放手一搏，無怨無悔。", en: "Don’t let regrets stay for tomorrow, don’t let dreams stop at today; give it your all and have no regrets." },
+            { zh: "你的夢想值得全力以赴，你的努力必將換來豐碩果實。", en: "Your dream is worth going all out for, and your efforts will surely yield fruitful results." },
+            { zh: "今朝埋頭苦讀，明日揚眉吐氣；此刻全力以赴，未來萬里可期。", en: "Burrow down to study today, hold your head high tomorrow; go all out at this moment, and the future is promising." },
+            { zh: "高三不拼，何時拼？青春不搏，枉少年！", en: "If not fight in senior year, when? Youth without striving is a wasted youth!" },
+            { zh: "把每一分鐘都用在刀刃上，把每一次考試都當成最後一次拼搏。", en: "Use every minute wisely, and treat every exam as the last fight." },
+            { zh: "拼搏的路上或許充滿艱辛，但每一次突破都會讓你變得更強。", en: "The road of striving may be full of hardships, but every breakthrough will make you stronger." },
+            { zh: "不與他人比較，只與昨天的自己較量，每天進步一點，就是最大的勝利。", en: "Don’t compare with others, only compete with yourself yesterday; making a little progress every day is the greatest victory." },
+            { zh: "放手一搏，不為別人，只為給自己的青春一個無悔的交代。", en: "Give it your all, not for others, but to give your youth a regretless explanation." },
+            { zh: "拼搏是青春最美的底色，努力是人生最強的底氣。", en: "Striving is the most beautiful background color of youth, and hard work is the strongest confidence in life." },
+            { zh: "與時間賽跑，與自己較勁，在高三的舞臺上綻放最耀眼的光芒。", en: "Race against time, compete with yourself, and shine the brightest on the stage of senior year." },
+            { zh: "沒有等出來的輝煌，只有拼出來的精彩。", en: "There is no glory that comes from waiting; only wonderful achievements that come from striving." },
+            { zh: "困難像彈簧，你強它就弱，你弱它就強，拿出拼搏的勇氣，戰勝一切阻礙。", en: "Difficulties are like a spring: the stronger you are, the weaker they become; the weaker you are, the stronger they get. Summon the courage to strive and overcome all obstacles." },
+            { zh: "壓力是動力的源泉，困境是成長的契機。", en: "Pressure is the source of motivation, and difficulties are opportunities for growth." },
+            { zh: "與其被壓力擊垮，不如把壓力轉化為前行的力量。", en: "Instead of being crushed by pressure, turn it into the power to move forward." },
+            { zh: "適度放鬆，張弛有度，才能在高三的長跑中保持最佳狀態。", en: "Proper relaxation and a balance between tension and ease are essential to maintain the best state in the long-distance race of senior year." },
+            { zh: "一次的失敗不算什麼，重要的是重新站起來的勇氣和不放棄的決心。", en: "One failure is nothing; what matters is the courage to stand up again and the determination not to give up." },
+            { zh: "學會調整心態，把焦慮轉化為行動，把緊張轉化為細心。", en: "Learn to adjust your mindset, turn anxiety into action, and turn nervousness into carefulness." },
+            { zh: "每一次考試都是一次檢驗，不是最終判決，總結經驗，繼續前行。", en: "Every exam is a test, not a final judgment. Summarize experience and keep moving forward." },
+            { zh: "相信自己的實力，不被暫時的挫折打敗，陽光總在風雨後。", en: "Believe in your own strength, don’t be defeated by temporary setbacks; the sun always comes after the rain." },
+            { zh: "壓力越大，潛能越大，只要扛住風雨，必能看見彩虹。", en: "The greater the pressure, the greater the potential. As long as you withstand the storm, you will surely see the rainbow." },
+            { zh: "學會與壓力共處，在挑戰中磨煉心智，在困難中變得堅強。", en: "Learn to live with pressure, temper your mind in challenges, and become stronger in difficulties." },
+            { zh: "不要過度糾結於過去的失誤，珍惜當下的時間，全力以赴創造未來。", en: "Don’t dwell too much on past mistakes; cherish the present time and go all out to create the future." },
+            { zh: "自律的人從不浪費時間，因為他們知道，每一分鐘都彌足珍貴。", en: "Self-disciplined people never waste time, because they know every minute is precious." },
+            { zh: "把堅持變成習慣，把自律變成本能，成功自然水到渠成。", en: "Turn perseverance into a habit and self-discipline into an instinct, and success will come naturally." },
+            { zh: "別讓懶惰毀了你的潛能，別讓拖延耽誤了你的夢想，自律才能自由。", en: "Don’t let laziness ruin your potential, don’t let procrastination delay your dreams; self-discipline leads to freedom." },
+            { zh: "自律不是束縛，而是為了給夢想騰出更多時間和空間。", en: "Self-discipline is not restraint, but to make more time and space for dreams." },
+            { zh: "每天堅持既定計劃，不打折扣，不找借口，時間會給你最好的回報。", en: "Stick to the established plan every day without compromise or excuses; time will give you the best reward." },
+            { zh: "自律的背後，是對夢想的執著和對未來的負責。", en: "Behind self-discipline is dedication to dreams and responsibility for the future." },
+            { zh: "在沒有人監督的時候，依然能堅持努力，才是真正的自律。", en: "The true self-discipline is to keep working hard even when no one is supervising you." },
+            { zh: "不要被負面情緒左右，學會調整自己，用積極的能量感染身邊的人。", en: "Don’t be influenced by negative emotions; learn to adjust yourself and infect people around you with positive energy." },
+            { zh: "每一次努力都值得肯定，每一個進步都值得慶祝，保持樂觀，繼續前行。", en: "Every effort is worthy of recognition, every progress is worthy of celebration. Stay optimistic and keep moving forward." },
+            { zh: "樂觀的人總能在絕境中找到希望，在黑暗中看見光明。", en: "Optimistic people can always find hope in despair and see light in darkness." },
+            { zh: "高三的日子或許艱苦，但只要心態陽光，就能在奮鬥中收穫成長與快樂。", en: "Senior year may be hard, but as long as you have a sunny mindset, you can gain growth and happiness in the struggle." },
+            { zh: "不積跬步，無以至千里；不積小流，無以成江海。", en: "Without accumulating small steps, one cannot travel a thousand miles; without gathering small streams, one cannot form rivers and seas." },
+            { zh: "知識在於積累，實力在於沉澱，每天多學一點，每天進步一點。", en: "Knowledge lies in accumulation, and strength lies in precipitation. Learn a little more every day and make progress a little every day." },
+            { zh: "相信自己，你比想象中更強大，你的潛力無限。", en: "Believe in yourself; you are stronger than you think, and your potential is unlimited." },
+            { zh: "自信是成功的基石，只有相信自己，才能戰勝一切困難。", en: "Self-confidence is the cornerstone of success; only by believing in yourself can you overcome all difficulties." },
+            { zh: "自信不是盲目樂觀，而是基於實力的從容，基於努力的底氣。", en: "Self-confidence is not blind optimism, but calmness based on strength and confidence based on hard work." },
+            { zh: "無論遇到多大的挑戰，都要告訴自己：“我能行，我一定可以！”", en: "No matter how big the challenge is, tell yourself: “I can do it, I definitely can!”" },
+            { zh: "你的努力值得被肯定，你的實力足以撐起你的自信，大膽去追求夢想吧！", en: "Your efforts are worthy of recognition, and your strength is enough to support your self-confidence. Boldly pursue your dreams!" },
+            { zh: "時間是最公平的裁判，你對它認真，它便給你回饋；你對它懈怠，它便讓你後悔。", en: "Time is the fairest judge: if you take it seriously, it will reward you; if you slack off on it, it will make you regret." },
+            { zh: "高三的每一分鐘都堪比黃金，抓住時間的人，才能抓住成功的機會。", en: "Every minute of senior year is comparable to gold; only those who seize time can seize the opportunity of success." },
+            { zh: "不要總是 “等一下”，時間從不等人，錯過的每一秒，都可能錯過改變命運的契機。", en: "Don’t always say “wait a minute”; time never waits for anyone. Every second you miss may be a chance to change your destiny." },
+            { zh: "學會規劃時間，把零碎的時光匯聚成寶貴的學習時段，積少成多，終見成效。", en: "Learn to plan time, gather fragmented moments into precious study periods; small gains add up to big results in the end." },
+            { zh: "與時間賽跑不是口號，而是行動 —— 早一分鐘開始，就多一分鐘積累，多一分鐘機會。", en: "Racing against time is not a slogan but an action: starting one minute earlier means one more minute of accumulation and one more minute of opportunity." },
+            { zh: "別讓拖延浪費時間，別讓懶惰消耗青春，把握當下，才能創造無悔的未來。", en: "Don’t let procrastination waste time, don’t let laziness consume youth; only by seizing the present can you create a regretless future." },
+            { zh: "時間會記錄你的努力，也會見證你的成長，認真對待每一刻，未來必將感謝現在的你。", en: "Time will record your efforts and witness your growth; take every moment seriously, and the future will surely thank you for who you are now." },
+            { zh: "別讓 “等明天” 浪費今天的機會，別讓 “怕麻煩” 錯過成長的可能，行動起來，才能創造屬於自己的奇蹟。", en: "Don’t let “waiting for tomorrow” waste today’s opportunity, don’t let “fear of trouble” miss the possibility of growth; only by acting can you create your own miracle." },
+            { zh: "高三的勝利，從來不是 “想出來” 的，而是 “做起來” 的 —— 用行動證明自己，用努力兌現夢想，未來的你必將感謝此刻堅持的自己。", en: "The victory of senior year is never “thought out”, but “done”: prove yourself with actions, fulfill your dream with efforts, and the future you will surely thank yourself for persisting at this moment." }
         ];
 
         const colors = ['tech-blue', 'tech-purple', 'tech-cyan', 'tech-orange', 'tech-pink', 'tech-green', 'tech-red', 'tech-indigo', 'tech-yellow', 'tech-teal'];
@@ -214,7 +212,7 @@
                 } else {
                     overlay.classList.remove('hidden');
                     container.classList.add('card-locked');
-                    overlay.innerHTML = `<i class="fa fa-lock text-3xl text-${card.dataset.color} mb-2 animate-pulse"></i><p class="text-white text-xs">${card.dataset.date}</p>`;
+                    overlay.innerHTML = `<i class="fa fa-lock text-3xl text-${card.dataset.color} mb-2 animate-pulse"></i><p class="text-white text-xs">${card.dataset.date} 解鎖</p>`;
                 }
             });
         }
@@ -235,7 +233,6 @@
             const container = document.getElementById('bookmark-container');
             motivators.forEach((item, index) => {
                 const seq = index + 1;
-                // 重要修正：加上 'p' 前綴來匹配你的檔名 p1.png, p2.png...
                 const localImgPath = `images/p${seq}.png`;
                 
                 let y = BASE_START_DATE.year, m = BASE_START_DATE.month, d = BASE_START_DATE.day + index;
@@ -245,7 +242,7 @@
                 const color = colors[index % colors.length];
 
                 const cardWrap = document.createElement('div');
-                cardWrap.className = `card-flip neon-border rounded-2xl overflow-hidden card-glow relative h-[400px]`;
+                cardWrap.className = `card-flip neon-border rounded-2xl overflow-hidden card-glow relative h-[420px]`;
                 cardWrap.innerHTML = `
                     <div class="bookmark-card absolute inset-0" data-date="${dStr}" data-color="${color}">
                         <div class="bookmark-front h-full flex flex-col bg-neutral-800/90 backdrop-blur-sm">
@@ -256,17 +253,17 @@
                             <div class="p-4 flex-grow flex flex-col items-center text-center">
                                 <h3 class="text-lg font-bold text-${color} mb-1">第${66-index}天</h3>
                                 <p class="text-[10px] text-neutral-400 mb-3">${dStr}</p>
-                                <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-${color} mb-3">
+                                <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-${color} mb-3 shadow-lg">
                                     <img src="${localImgPath}" class="w-full h-full object-cover">
                                 </div>
-                                <p class="text-neutral-300 text-[10px]">點擊翻轉</p>
+                                <p class="text-neutral-400 text-[10px] italic">點擊查看激勵語</p>
                             </div>
                         </div>
-                        <div class="bookmark-back h-full flex flex-col bg-neutral-800/90 backdrop-blur-sm p-5 justify-center">
-                            <p class="text-white text-base mb-2">${item.zh}</p>
-                            <div class="h-px bg-white/20 my-2"></div>
-                            <p class="text-neutral-300 text-sm italic">${item.en}</p>
-                            <img src="${localImgPath}" class="w-10 h-10 rounded-full mt-4 self-center border border-${color}">
+                        <div class="bookmark-back h-full flex flex-col bg-neutral-800/90 backdrop-blur-sm p-6 justify-center text-center">
+                            <p class="text-white text-lg leading-relaxed mb-4">${item.zh}</p>
+                            <div class="h-px bg-white/20 my-4"></div>
+                            <p class="text-neutral-300 text-sm italic leading-relaxed">${item.en}</p>
+                            <img src="${localImgPath}" class="w-12 h-12 rounded-full mt-6 self-center border-2 border-${color}">
                         </div>
                     </div>
                     <div class="lock-overlay"></div>`;
