@@ -1,134 +1,408 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>115學測倒數66天</title>
+    <title>116學測倒數66天｜懸浮能量卡牌</title>
+    <!-- 載入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 載入 Font Awesome 圖示 -->
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <!-- 載入 Inter 與繁體中文字體 Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        tech: {
-                            blue: 'rgba(14, 165, 233, 0.9)',
-                            purple: '#8B5CF6',
-                            pink: '#EC4899',
-                            cyan: '#06B6D4',
-                            green: '#10B981',
-                            orange: '#F59E0B',
-                            red: '#EF4444',
-                            teal: '#14B8A6',
-                            indigo: '#6366F1',
-                            yellow: '#FBBF24'
-                        },
-                        neutral: { 100: '#F3F4F6', 200: '#E5E7EB', 800: '#1F2937', 900: '#111827' }
-                    },
-                    fontFamily: { inter: ['Inter', 'sans-serif'] },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                        'countdown-pulse': 'countdown-pulse 1s ease-in-out infinite alternate'
-                    },
-                    keyframes: {
-                        glow: {
-                            '0%': { boxShadow: '0 0 5px rgba(14, 165, 233, 0.5)' },
-                            '100%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.8), 0 0 30px rgba(14, 165, 233, 0.5)' }
-                        },
-                        'countdown-pulse': {
-                            '0%': { textShadow: '0 0 10px rgba(14, 165, 233, 0.7)' },
-                            '100%': { textShadow: '0 0 20px rgba(14, 165, 233, 0.9), 0 0 30px rgba(14, 165, 233, 0.6)' }
-                        }
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
                     }
                 }
             }
-        }
+        };
     </script>
-    
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .glass { @apply bg-white/10 backdrop-blur-md border border-white/20; }
-            .tech-gradient { @apply bg-gradient-to-br from-tech-blue to-tech-purple; }
-            .card-glow { box-shadow: 0 0 15px rgba(14, 165, 233, 0.3), 0 0 30px rgba(14, 165, 233, 0.1); }
-            .countdown-container { position: relative; overflow: hidden; }
-            .countdown-container::before {
-                content: ''; position: absolute; inset: 0;
-                background: linear-gradient(135deg, rgba(102, 51, 153, 0.7), rgba(30, 64, 175, 0.7));
-                z-index: -1;
+
+    <style>
+        /* =========================================
+           全域樣式與星空漸層背景
+        ========================================= */
+        body {
+            background: radial-gradient(ellipse at top, #111b36 0%, #090d1a 55%, #04060d 100%);
+            color: #f8fafc;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 科技感毛玻璃面板 */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.62);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        }
+
+        /* 倒數數字微光特效 */
+        .neon-digit {
+            text-shadow: 0 0 18px currentColor;
+        }
+
+        /* =========================================
+           懸浮能量卡牌與 3D 翻轉核心樣式
+        ========================================= */
+        .card-stage {
+            perspective: 1200px;
+            position: relative;
+            padding-bottom: 18px;
+        }
+
+        /* 反重力微幅懸浮動畫 */
+        .float-wrapper {
+            animation: levitate var(--float-duration, 5.5s) ease-in-out var(--float-delay, 0s) infinite;
+            will-change: transform;
+        }
+
+        .card-stage:hover .float-wrapper {
+            animation-play-state: paused;
+        }
+
+        @keyframes levitate {
+            0%, 100% {
+                transform: translateY(0px);
             }
-            .card-flip { perspective: 1000px; cursor: pointer; }
-            .bookmark-card { transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; position: relative; height: 100%; }
-            .bookmark-front, .bookmark-back { backface-visibility: hidden; transition: all 0.6s ease; position: absolute; inset: 0; width: 100%; height: 100%; }
-            .bookmark-back { transform: rotateY(180deg); }
-            .bookmark-card.flipped { transform: rotateY(180deg); }
-            .lock-overlay {
-                position: absolute; inset: 0; background: rgba(17, 24, 39, 0.85);
-                border-radius: inherit; display: flex; flex-direction: column;
-                align-items: center; justify-content: center; z-index: 10;
-                backdrop-filter: blur(4px); transition: opacity 0.3s ease;
+            50% {
+                transform: translateY(-9px);
             }
-            .lock-overlay.hidden { opacity: 0; pointer-events: none; }
-            .neon-border { position: relative; }
-            .neon-border::after {
-                content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
-                background: linear-gradient(45deg, #0EA5E9, #8B5CF6, #EC4899);
-                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-                -webkit-mask-composite: xor; mask-composite: exclude;
-                pointer-events: none; animation: glow 2s ease-in-out infinite;
+        }
+
+        /* 底部懸浮光影（隨懸浮高度呼吸縮放） */
+        .hover-shadow {
+            position: absolute;
+            bottom: 2px;
+            left: 16%;
+            right: 16%;
+            height: 14px;
+            border-radius: 9999px;
+            background: radial-gradient(ellipse at center, var(--card-glow, rgba(56, 189, 248, 0.45)) 0%, transparent 72%);
+            filter: blur(5px);
+            animation: shadowPulse var(--float-duration, 5.5s) ease-in-out var(--float-delay, 0s) infinite;
+            pointer-events: none;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+        }
+
+        @keyframes shadowPulse {
+            0%, 100% {
+                transform: scaleX(1);
+                opacity: 0.72;
             }
-            .expired-card { opacity: 0.85; }
+            50% {
+                transform: scaleX(0.84);
+                opacity: 0.38;
+            }
+        }
+
+        .card-stage:hover .hover-shadow {
+            transform: scaleX(1.06);
+            opacity: 0.9;
+        }
+
+        /* 滑鼠 3D 磁浮傾斜層（獨立於翻轉層，避免 transform 互相覆蓋） */
+        .tilt-shell {
+            position: relative;
+            width: 100%;
+            height: 430px;
+            transform-style: preserve-3d;
+            transition: transform 0.25s ease-out;
+            border-radius: 1.5rem;
+        }
+
+        /* 3D 翻轉本體 */
+        .flip-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+            border-radius: 1.5rem;
+        }
+
+        .flip-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* 正面與背面共同設定 */
+        .card-face {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 1.5rem;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: linear-gradient(155deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 23, 42, 0.96) 100%);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42), 0 0 22px var(--card-glow-soft, rgba(56, 189, 248, 0.14));
+        }
+
+        .card-front {
+            transform: rotateY(0deg) translateZ(1px);
+            z-index: 2;
+        }
+
+        .card-back {
+            transform: rotateY(180deg) translateZ(1px);
+            z-index: 1;
+        }
+
+        /* 全息反光高光層 */
+        .holo-sheen {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: radial-gradient(
+                circle 220px at var(--mx, 50%) var(--my, 50%),
+                rgba(255, 255, 255, 0.22),
+                rgba(255, 255, 255, 0.05) 45%,
+                transparent 75%
+            );
+            z-index: 15;
+        }
+
+        .card-stage:hover .holo-sheen {
+            opacity: 1;
+        }
+
+        /* 獨立鎖定遮罩層（置於 flip-inner 之外，完全不干擾 3D 翻轉渲染） */
+        .lock-veil {
+            position: absolute;
+            inset: 0;
+            z-index: 30;
+            border-radius: 1.5rem;
+            background: rgba(9, 13, 26, 0.82);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px dashed rgba(148, 163, 184, 0.35);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: not-allowed;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .lock-veil.is-unlocked {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* 今日解鎖專屬發光邊框 */
+        .today-highlight .card-face {
+            border: 2px solid rgba(56, 189, 248, 0.9);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.45), 0 0 60px rgba(139, 92, 246, 0.25);
+        }
+
+        /* 未解鎖點擊時輕微搖晃回饋 */
+        @keyframes lockedShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-4px); }
+        }
+
+        .shake-feedback {
+            animation: lockedShake 0.35s ease-in-out;
+        }
+
+        /* 自訂捲軸（卡片背面長勵志語時美觀捲動） */
+        .quote-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .quote-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 9999px;
+        }
+        .quote-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.22);
+            border-radius: 9999px;
         }
     </style>
 </head>
-<body class="font-inter bg-neutral-900 min-h-screen p-4 md:p-8 overflow-x-hidden text-neutral-100">
-    <div id="particles-js" class="fixed inset-0 z-0 opacity-30"></div>
-    
-    <div class="max-w-7xl mx-auto relative z-10">
-        <header class="text-center mb-12 pt-8">
-            <div class="glass rounded-2xl p-6 md:p-8 card-glow relative overflow-hidden">
-                <h1 class="text-[clamp(2rem,8vw,4rem)] font-bold text-transparent bg-clip-text tech-gradient mb-2 relative z-10 animate-pulse-slow">
-                    115學測倒數
-                </h1>
-                <p class="text-neutral-100 text-lg md:text-xl max-w-2xl mx-auto mb-8 relative z-10">
-                    從2025-11-12開始的66天，每天一張萌寵與激勵語，陪你冲刺2026年1月17日學測
-                </p>
-                
-                <div class="countdown-container glass rounded-xl p-6 md:p-8 inline-block relative z-10">
-                    <div class="flex flex-row justify-center items-center gap-4 md:gap-10">
-                        <div class="text-center"><div id="days" class="text-3xl md:text-7xl font-bold text-tech-blue animate-countdown-pulse">00</div><div class="text-xs text-neutral-200 mt-2">天</div></div>
-                        <div class="text-center"><div id="hours" class="text-3xl md:text-7xl font-bold text-tech-purple animate-countdown-pulse">00</div><div class="text-xs text-neutral-200 mt-2">時</div></div>
-                        <div class="text-center"><div id="minutes" class="text-3xl md:text-7xl font-bold text-tech-pink animate-countdown-pulse">00</div><div class="text-xs text-neutral-200 mt-2">分</div></div>
-                        <div class="text-center"><div id="seconds" class="text-3xl md:text-7xl font-bold text-tech-cyan animate-countdown-pulse">00</div><div class="text-xs text-neutral-200 mt-2">秒</div></div>
+<body class="min-h-screen antialiased selection:bg-sky-500/30 selection:text-sky-200">
+    <!-- 星空粒子畫布（自建輕量版，無外部 CDN 失效風險） -->
+    <canvas id="starfield-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <!-- 浮動 Toast 提示訊息（取代 alert） -->
+    <div id="toast-box" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300">
+        <div class="glass-panel px-5 py-3 rounded-full flex items-center gap-2.5 text-sm font-medium text-sky-100 border border-sky-400/40 shadow-2xl">
+            <i id="toast-icon" class="fa fa-info-circle text-sky-400"></i>
+            <span id="toast-text">提示訊息</span>
+        </div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <!-- 頂部主視覺與倒數計時器 -->
+        <header class="mb-10">
+            <div class="glass-panel rounded-3xl p-6 sm:p-8 md:p-10 text-center relative overflow-hidden">
+                <!-- 裝飾性光暈 -->
+                <div class="absolute -top-24 -left-24 w-72 h-72 bg-sky-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs sm:text-sm font-semibold tracking-wider mb-4">
+                        <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+                        <span>2026-11-17 啟動 ✦ 2027-01-21 學測終點（共 66 天）</span>
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-sky-300 via-indigo-300 to-fuchsia-300 text-transparent bg-clip-text mb-3">
+                        116 學測倒數 66 天
+                    </h1>
+
+                    <p class="text-slate-300 text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
+                        每天解鎖一張專屬懸浮能量卡，結合 Q 版萌寵與中英雙語勵志語，陪你一步一腳印迎戰 2027 年 1 月 21 日！
+                    </p>
+
+                    <!-- 精確到秒的倒數儀表板 -->
+                    <div class="inline-grid grid-cols-4 gap-3 sm:gap-5 md:gap-7 bg-slate-900/70 border border-white/10 rounded-2xl px-4 py-5 sm:px-8 sm:py-6 mb-7 shadow-inner">
+                        <div class="flex flex-col items-center min-w-[62px] sm:min-w-[84px]">
+                            <span id="cd-days" class="text-3xl sm:text-5xl md:text-6xl font-extrabold text-sky-400 neon-digit tabular-nums">00</span>
+                            <span class="text-xs sm:text-sm text-slate-400 mt-1.5 font-medium tracking-widest">天 DAYS</span>
+                        </div>
+                        <div class="flex flex-col items-center min-w-[62px] sm:min-w-[84px]">
+                            <span id="cd-hours" class="text-3xl sm:text-5xl md:text-6xl font-extrabold text-indigo-400 neon-digit tabular-nums">00</span>
+                            <span class="text-xs sm:text-sm text-slate-400 mt-1.5 font-medium tracking-widest">時 HRS</span>
+                        </div>
+                        <div class="flex flex-col items-center min-w-[62px] sm:min-w-[84px]">
+                            <span id="cd-minutes" class="text-3xl sm:text-5xl md:text-6xl font-extrabold text-fuchsia-400 neon-digit tabular-nums">00</span>
+                            <span class="text-xs sm:text-sm text-slate-400 mt-1.5 font-medium tracking-widest">分 MINS</span>
+                        </div>
+                        <div class="flex flex-col items-center min-w-[62px] sm:min-w-[84px]">
+                            <span id="cd-seconds" class="text-3xl sm:text-5xl md:text-6xl font-extrabold text-cyan-400 neon-digit tabular-nums">00</span>
+                            <span class="text-xs sm:text-sm text-slate-400 mt-1.5 font-medium tracking-widest">秒 SECS</span>
+                        </div>
+                    </div>
+
+                    <!-- 66 天衝刺進度條 -->
+                    <div class="max-w-xl mx-auto">
+                        <div class="flex justify-between items-center text-xs sm:text-sm text-slate-300 mb-2">
+                            <span id="progress-label">衝刺進度計算中...</span>
+                            <span id="progress-percent" class="font-bold text-sky-300">0%</span>
+                        </div>
+                        <div class="w-full h-3 bg-slate-800/90 rounded-full overflow-hidden border border-white/10 p-0.5">
+                            <div id="progress-bar" class="h-full rounded-full bg-gradient-to-r from-sky-400 via-indigo-400 to-fuchsia-400 transition-all duration-700" style="width: 0%"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </header>
-        
-        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8" id="bookmark-container"></main>
 
-        <footer class="mt-16 text-center">
-            <div class="glass rounded-2xl p-6 card-glow">
-                <p class="text-neutral-100 text-lg">
-                    <i class="fa fa-rocket text-tech-pink animate-pulse-slow"></i> 每一次努力都在雕刻更好的自己，陳弘祝你115學測順利！
+        <!-- 互動控制列（篩選、跳至今日、老師預覽全部開關） -->
+        <section class="glass-panel rounded-2xl p-4 mb-8 flex flex-col lg:flex-row items-center justify-between gap-4">
+            <!-- 篩選按鈕群組 -->
+            <div class="flex flex-wrap items-center justify-center gap-2" id="filter-group">
+                <button data-filter="all" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-sky-500 text-white shadow-lg shadow-sky-500/25">
+                    全部卡牌 (66)
+                </button>
+                <button data-filter="unlocked" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10">
+                    已解鎖
+                </button>
+                <button data-filter="today" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10">
+                    今日卡牌
+                </button>
+                <button data-filter="locked" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10">
+                    尚未解鎖
+                </button>
+            </div>
+
+            <!-- 右側功能操作 -->
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <button id="btn-jump-today" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-500/20 hover:bg-indigo-500/35 text-indigo-200 border border-indigo-400/30 transition-all flex items-center gap-2">
+                    <i class="fa fa-crosshairs"></i>
+                    <span>定位今日卡牌</span>
+                </button>
+
+                <label class="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all select-none">
+                    <input type="checkbox" id="toggle-preview-all" class="sr-only peer">
+                    <div class="relative w-10 h-5 bg-slate-700 rounded-full peer peer-checked:bg-fuchsia-500 transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
+                    <span class="text-sm font-medium text-slate-200">預覽全部解鎖</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- 66 張懸浮卡牌網格 -->
+        <main id="bookmark-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 md:gap-8">
+            <!-- 由 JavaScript 動態生成 66 張卡牌 -->
+        </main>
+
+        <!-- 空狀態提示（當篩選結果為 0 時顯示） -->
+        <div id="empty-state" class="hidden glass-panel rounded-3xl p-12 text-center my-8">
+            <i class="fa fa-sparkles text-4xl text-sky-400 mb-3"></i>
+            <p class="text-slate-200 text-lg font-semibold mb-1">目前這個分類沒有卡牌喔！</p>
+            <p class="text-slate-400 text-sm">您可以切換其他分類，或開啟右上角的「預覽全部解鎖」提前欣賞所有勵志語。</p>
+        </div>
+
+        <!-- 頁尾祝福與署名 -->
+        <footer class="mt-16 mb-6 text-center">
+            <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-3xl mx-auto">
+                <p class="text-slate-100 text-base sm:text-lg font-medium mb-3">
+                    <i class="fa fa-rocket text-fuchsia-400 mr-2"></i>
+                    每一次努力都在雕刻更好的自己，祝你 116 學測金榜題名、順利上岸！
                 </p>
-                <div class="mt-4 flex justify-center space-x-6 text-neutral-400">
-                    <i class="fa fa-heart text-2xl hover:text-tech-pink transition-colors"></i>
-                    <i class="fa fa-star text-2xl hover:text-tech-yellow transition-colors"></i>
-                    <i class="fa fa-share-alt text-2xl hover:text-tech-blue transition-colors"></i>
-                </div>
+                <div class="w-20 h-0.5 bg-gradient-to-r from-transparent via-sky-400/60 to-transparent mx-auto my-4"></div>
+                <p class="text-sky-300/90 text-sm sm:text-base font-semibold tracking-widest">
+                    陳弘老師製作
+                </p>
             </div>
         </footer>
     </div>
-    
+
     <script>
-        const BASE_START_DATE = { year: 2025, month: 11, day: 12 };
-        const EXAM_FIXED_DATE = new Date(2026, 0, 17);
-        EXAM_FIXED_DATE.setHours(0, 0, 0, 0);
-        
+        /* =========================================================
+           核心日期配置：
+           結束日期：2027-01-21
+           往前推 66 天（包含 2027-01-21 當天）＝ 2026-11-17 啟動
+           驗證：11月(17~30共14天) + 12月(31天) + 1月(1~21共21天) = 66天
+        ========================================================= */
+        const TOTAL_DAYS = 66;
+        const START_YEAR = 2026, START_MONTH = 11, START_DAY = 17; // 2026-11-17
+        const END_YEAR = 2027, END_MONTH = 1, END_DAY = 21;        // 2027-01-21
+
+        // 建立純日曆 UTC Date 物件，徹底避免跨時區偏移
+        const START_UTC = new Date(Date.UTC(START_YEAR, START_MONTH - 1, START_DAY));
+        // 倒數計時器目標時間（採用使用者本地時區的 2027-01-21 00:00:00）
+        const EXAM_TARGET_LOCAL = new Date(END_YEAR, END_MONTH - 1, END_DAY, 0, 0, 0, 0);
+
+        // 狀態控制
+        let currentFilter = 'all';
+        let previewAllUnlocked = false;
+        let toastTimer = null;
+
+        // 10 組高質感懸浮能量卡配色主題
+        const palettes = [
+            { grad: 'from-sky-500 to-indigo-600', text: 'text-sky-300', badge: 'bg-sky-500/20 text-sky-300 border-sky-400/40', ring: 'border-sky-400', glow: 'rgba(56, 189, 248, 0.5)', glowSoft: 'rgba(56, 189, 248, 0.16)' },
+            { grad: 'from-violet-500 to-fuchsia-600', text: 'text-violet-300', badge: 'bg-violet-500/20 text-violet-300 border-violet-400/40', ring: 'border-violet-400', glow: 'rgba(167, 139, 250, 0.5)', glowSoft: 'rgba(167, 139, 250, 0.16)' },
+            { grad: 'from-cyan-500 to-teal-600', text: 'text-cyan-300', badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40', ring: 'border-cyan-400', glow: 'rgba(34, 211, 238, 0.5)', glowSoft: 'rgba(34, 211, 238, 0.16)' },
+            { grad: 'from-amber-500 to-orange-600', text: 'text-amber-300', badge: 'bg-amber-500/20 text-amber-300 border-amber-400/40', ring: 'border-amber-400', glow: 'rgba(251, 191, 36, 0.5)', glowSoft: 'rgba(251, 191, 36, 0.16)' },
+            { grad: 'from-pink-500 to-rose-600', text: 'text-pink-300', badge: 'bg-pink-500/20 text-pink-300 border-pink-400/40', ring: 'border-pink-400', glow: 'rgba(244, 114, 182, 0.5)', glowSoft: 'rgba(244, 114, 182, 0.16)' },
+            { grad: 'from-emerald-500 to-teal-600', text: 'text-emerald-300', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40', ring: 'border-emerald-400', glow: 'rgba(52, 211, 153, 0.5)', glowSoft: 'rgba(52, 211, 153, 0.16)' },
+            { grad: 'from-rose-500 to-red-600', text: 'text-rose-300', badge: 'bg-rose-500/20 text-rose-300 border-rose-400/40', ring: 'border-rose-400', glow: 'rgba(251, 113, 133, 0.5)', glowSoft: 'rgba(251, 113, 133, 0.16)' },
+            { grad: 'from-indigo-500 to-blue-600', text: 'text-indigo-300', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/40', ring: 'border-indigo-400', glow: 'rgba(129, 140, 248, 0.5)', glowSoft: 'rgba(129, 140, 248, 0.16)' },
+            { grad: 'from-yellow-400 to-amber-500', text: 'text-yellow-300', badge: 'bg-yellow-500/20 text-yellow-300 border-yellow-400/40', ring: 'border-yellow-400', glow: 'rgba(250, 204, 21, 0.48)', glowSoft: 'rgba(250, 204, 21, 0.16)' },
+            { grad: 'from-teal-400 to-sky-600', text: 'text-teal-300', badge: 'bg-teal-500/20 text-teal-300 border-teal-400/40', ring: 'border-teal-400', glow: 'rgba(45, 212, 191, 0.5)', glowSoft: 'rgba(45, 212, 191, 0.16)' }
+        ];
+
+        // 備援 Q 版萌寵 Emoji（當本地 ./images/pX.png 不存在時自動顯示，避免破圖）
+        const fallbackPets = ['🐱', '🐶', '🐰', '🦊', '🐼', '🐻', '🐨', '🐯', '🦁', '🐸', '🐧', '🦄', '🐹', '🐣', '🦉', '🐳'];
+
+        // 完整保留 66 則中英雙語勵志語（序號 1-66，對應倒數第 66 天至第 1 天）
         const motivators = [
             { zh: "不放棄就有希望，堅持到底方能成功。", en: "Where there is no giving up, there is hope; only perseverance leads to success." },
             { zh: "每一滴汗水都不會白流，每一次堅持都會有回饋。", en: "No drop of sweat is shed in vain; every persistence will be rewarded." },
@@ -164,7 +438,7 @@
             { zh: "適度放鬆，張弛有度，才能在高三的長跑中保持最佳狀態。", en: "Proper relaxation and a balance between tension and ease are essential to maintain the best state in the long-distance race of senior year." },
             { zh: "一次的失敗不算什麼，重要的是重新站起來的勇氣和不放棄的決心。", en: "One failure is nothing; what matters is the courage to stand up again and the determination not to give up." },
             { zh: "學會調整心態，把焦慮轉化為行動，把緊張轉化為細心。", en: "Learn to adjust your mindset, turn anxiety into action, and turn nervousness into carefulness." },
-            { zh: "每一次考試續是一次檢驗，不是最終判決，總結經驗，繼續前行。", en: "Every exam is a test, not a final judgment. Summarize experience and keep moving forward." },
+            { zh: "每一次考試都是一次檢驗，不是最終判決，總結經驗，繼續前行。", en: "Every exam is a test, not a final judgment. Summarize experience and keep moving forward." },
             { zh: "相信自己的實力，不被暫時的挫折打敗，陽光總在風雨後。", en: "Believe in your own strength, don’t be defeated by temporary setbacks; the sun always comes after the rain." },
             { zh: "壓力越大，潛能越大，只要扛住風雨，必能看見彩虹。", en: "The greater the pressure, the greater the potential. As long as you withstand the storm, you will surely see the rainbow." },
             { zh: "學會與壓力共處，在挑戰中磨煉心智，在困難中變得堅強。", en: "Learn to live with pressure, temper your mind in challenges, and become stronger in difficulties." },
@@ -185,110 +459,505 @@
             { zh: "相信自己，你比想象中更強大，你的潛力無限。", en: "Believe in yourself; you are stronger than you think, and your potential is unlimited." },
             { zh: "自信是成功的基石，只有相信自己，才能戰勝一切困難。", en: "Self-confidence is the cornerstone of success; only by believing in yourself can you overcome all difficulties." },
             { zh: "自信不是盲目樂觀，而是基於實力的從容，基於努力的底氣。", en: "Self-confidence is not blind optimism, but calmness based on strength and confidence based on hard work." },
-            { zh: "無論遇到多大的挑戰，都要告訴自己：“我能行，我一定可以！”", en: "No matter how big the challenge is, tell yourself: “I can do it, I definitely can!”" },
+            { zh: "無論遇到多大的挑戰，都要告訴自己：「我能行，我一定可以！」", en: "No matter how big the challenge is, tell yourself: “I can do it, I definitely can!”" },
             { zh: "你的努力值得被肯定，你的實力足以撐起你的自信，大膽去追求夢想吧！", en: "Your efforts are worthy of recognition, and your strength is enough to support your self-confidence. Boldly pursue your dreams!" },
             { zh: "時間是最公平的裁判，你對它認真，它便給你回饋；你對它懈怠，它便讓你後悔。", en: "Time is the fairest judge: if you take it seriously, it will reward you; if you slack off on it, it will make you regret." },
             { zh: "高三的每一分鐘都堪比黃金，抓住時間的人，才能抓住成功的機會。", en: "Every minute of senior year is comparable to gold; only those who seize time can seize the opportunity of success." },
-            { zh: "不要總是 “等一下”，時間從不等人，錯過的每一秒，都可能錯過改變命運的契機。", en: "Don’t always say “wait a minute”; time never waits for anyone. Every second you miss may be a chance to change your destiny." },
+            { zh: "不要總是「等一下」，時間從不等人，錯過的每一秒，都可能錯過改變命運的契機。", en: "Don’t always say “wait a minute”; time never waits for anyone. Every second you miss may be a chance to change your destiny." },
             { zh: "學會規劃時間，把零碎的時光匯聚成寶貴的學習時段，積少成多，終見成效。", en: "Learn to plan time, gather fragmented moments into precious study periods; small gains add up to big results in the end." },
             { zh: "與時間賽跑不是口號，而是行動 —— 早一分鐘開始，就多一分鐘積累，多一分鐘機會。", en: "Racing against time is not a slogan but an action: starting one minute earlier means one more minute of accumulation and one more minute of opportunity." },
             { zh: "別讓拖延浪費時間，別讓懶惰消耗青春，把握當下，才能創造無悔的未來。", en: "Don’t let procrastination waste time, don’t let laziness consume youth; only by seizing the present can you create a regretless future." },
             { zh: "時間會記錄你的努力，也會見證你的成長，認真對待每一刻，未來必將感謝現在的你。", en: "Time will record your efforts and witness your growth; take every moment seriously, and the future will surely thank you for who you are now." },
-            { zh: "別讓 “等明天” 浪費今天的機會，別讓 “怕麻煩” 錯過成長的可能，行動起來，才能創造屬於自己的奇蹟。", en: "Don’t let “waiting for tomorrow” waste today’s opportunity, don’t let “fear of trouble” miss the possibility of growth; only by acting can you create your own miracle." },
-            { zh: "高三的勝利，從來不是 “想出來” 的，而是 “做起來” 的 —— 用行動證明自己，用努力兌現夢想，未來的你必將感謝此刻堅持的自己。", en: "The victory of senior year is never “thought out”, but “done”: prove yourself with actions, fulfill your dream with efforts, and the future you will surely thank yourself for persisting at this moment." }
+            { zh: "別讓「等明天」浪費今天的機會，別讓「怕麻煩」錯過成長的可能，行動起來，才能創造屬於自己的奇蹟。", en: "Don’t let “waiting for tomorrow” waste today’s opportunity, don’t let “fear of trouble” miss the possibility of growth; only by acting can you create your own miracle." },
+            { zh: "高三的勝利，從來不是「想出來」的，而是「做起來」的 —— 用行動證明自己，用努力兌現夢想，未來的你必將感謝此刻堅持的自己。", en: "The victory of senior year is never “thought out”, but “done”: prove yourself with actions, fulfill your dream with efforts, and the future you will surely thank yourself for persisting at this moment." }
         ];
 
-        const colors = ['tech-blue', 'tech-purple', 'tech-cyan', 'tech-orange', 'tech-pink', 'tech-green', 'tech-red', 'tech-indigo', 'tech-yellow', 'tech-teal'];
-
-        function toggleCardFlip() {
-            const card = this.querySelector('.bookmark-card');
-            if (card && !this.classList.contains('card-locked')) card.classList.toggle('flipped');
+        /* =========================================================
+           工具函式：日期格式化與提示訊息
+        ========================================================= */
+        function formatUTCDate(dateObj) {
+            const y = dateObj.getUTCFullYear();
+            const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getUTCDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
         }
 
-        function checkBookmarkLock() {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            document.querySelectorAll('.bookmark-card').forEach(card => {
-                const [y, m, d] = card.dataset.date.split('-').map(Number);
-                const bDate = new Date(y, m - 1, d);
-                bDate.setHours(0, 0, 0, 0);
-                const overlay = card.parentElement.querySelector('.lock-overlay');
-                const container = card.parentElement;
-                
-                if (bDate < today) {
-                    overlay.classList.add('hidden');
-                    container.classList.add('expired-card');
-                    overlay.innerHTML = `<i class="fa fa-check-circle text-4xl text-tech-green mb-2"></i><p class="text-white text-xs">已過期</p>`;
-                } else if (bDate.getTime() === today.getTime()) {
-                    overlay.classList.add('hidden');
-                } else {
-                    overlay.classList.remove('hidden');
-                    container.classList.add('card-locked');
-                    overlay.innerHTML = `<i class="fa fa-lock text-3xl text-${card.dataset.color} mb-2 animate-pulse"></i><p class="text-white text-xs">${card.dataset.date} 解鎖</p>`;
-                }
-            });
+        function getTodayLocalYMD() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
         }
 
-        function initCountdown() {
-            const target = EXAM_FIXED_DATE.getTime();
-            const pad = (n) => n.toString().padStart(2, '0');
-            setInterval(() => {
-                const dist = target - new Date().getTime();
-                document.getElementById('days').innerText = Math.max(0, Math.floor(dist / 86400000));
-                document.getElementById('hours').innerText = pad(Math.max(0, Math.floor((dist % 86400000) / 3600000)));
-                document.getElementById('minutes').innerText = pad(Math.max(0, Math.floor((dist % 3600000) / 60000)));
-                document.getElementById('seconds').innerText = pad(Math.max(0, Math.floor((dist % 60000) / 1000)));
-            }, 1000);
+        function showToast(message, iconClass = 'fa-info-circle text-sky-400') {
+            const box = document.getElementById('toast-box');
+            const text = document.getElementById('toast-text');
+            const icon = document.getElementById('toast-icon');
+            if (!box || !text || !icon) return;
+
+            text.textContent = message;
+            icon.className = `fa ${iconClass}`;
+            box.classList.remove('opacity-0', 'translate-y-4');
+            box.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                box.classList.add('opacity-0', 'translate-y-4');
+                box.classList.remove('opacity-100', 'translate-y-0');
+            }, 2600);
         }
 
-        function generateBookmarks() {
+        /* =========================================================
+           生成 66 張懸浮能量卡牌（圖片路徑：./images/p1.png ~ p66.png）
+        ========================================================= */
+        function generateFloatingCards() {
             const container = document.getElementById('bookmark-container');
-            motivators.forEach((item, index) => {
-                const seq = index + 1;
-                const localImgPath = `images/p${seq}.png`;
-                
-                let y = BASE_START_DATE.year, m = BASE_START_DATE.month, d = BASE_START_DATE.day + index;
-                const dim = [31,28,31,30,31,30,31,31,30,31,30,31];
-                while (d > dim[m-1]) { d -= dim[m-1]; m++; if(m>12){m=1;y++;} }
-                const dStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const color = colors[index % colors.length];
+            if (!container) return;
+            container.innerHTML = '';
 
-                const cardWrap = document.createElement('div');
-                cardWrap.className = `card-flip neon-border rounded-2xl overflow-hidden card-glow relative h-[420px]`;
-                cardWrap.innerHTML = `
-                    <div class="bookmark-card absolute inset-0" data-date="${dStr}" data-color="${color}">
-                        <div class="bookmark-front h-full flex flex-col bg-neutral-800/90 backdrop-blur-sm">
-                            <div class="h-40 relative">
-                                <div class="absolute inset-0 bg-gradient-to-br from-${color} to-black opacity-60"></div>
-                                <div class="absolute inset-0 flex items-center justify-center"><span class="text-5xl font-bold text-white">${66-index}</span></div>
-                            </div>
-                            <div class="p-4 flex-grow flex flex-col items-center text-center">
-                                <h3 class="text-lg font-bold text-${color} mb-1">第${66-index}天</h3>
-                                <p class="text-[10px] text-neutral-400 mb-3">${dStr}</p>
-                                <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-${color} mb-3 shadow-lg">
-                                    <img src="${localImgPath}" class="w-full h-full object-cover">
+            motivators.forEach((item, index) => {
+                const countdownDay = TOTAL_DAYS - index; // 66 -> 1
+                const seq = index + 1;                   // 1 -> 66
+                const palette = palettes[index % palettes.length];
+                const petEmoji = fallbackPets[index % fallbackPets.length];
+                const localImgPath = `./images/p${seq}.png`;
+
+                // 計算該張卡牌的日曆日期（從 2026-11-17 逐日遞增至 2027-01-21）
+                const cardDate = new Date(START_UTC.getTime());
+                cardDate.setUTCDate(START_UTC.getUTCDate() + index);
+                const dateStr = formatUTCDate(cardDate);
+
+                // 每張卡牌錯開懸浮節奏，產生星際漂浮感
+                const floatDuration = (4.8 + (index % 5) * 0.55).toFixed(2);
+                const floatDelay = ((index % 7) * -0.75).toFixed(2);
+
+                const stage = document.createElement('div');
+                stage.className = 'card-stage';
+                stage.dataset.date = dateStr;
+                stage.dataset.day = countdownDay;
+                stage.dataset.seq = seq;
+                stage.style.setProperty('--float-duration', `${floatDuration}s`);
+                stage.style.setProperty('--float-delay', `${floatDelay}s`);
+                stage.style.setProperty('--card-glow', palette.glow);
+                stage.style.setProperty('--card-glow-soft', palette.glowSoft);
+
+                stage.innerHTML = `
+                    <div class="float-wrapper">
+                        <div class="tilt-shell">
+                            <!-- 3D 翻轉容器 -->
+                            <div class="flip-inner cursor-pointer" role="button" tabindex="0" aria-label="倒數第${countdownDay}天卡牌，點擊翻轉">
+                                <!-- 卡牌正面 -->
+                                <div class="card-face card-front flex flex-col">
+                                    <div class="holo-sheen"></div>
+
+                                    <!-- 頂部漸層與倒數大數字 -->
+                                    <div class="relative h-44 bg-gradient-to-br ${palette.grad} p-4 flex flex-col justify-between overflow-hidden">
+                                        <div class="flex items-center justify-between relative z-10">
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-black/30 backdrop-blur-md text-white/95 tracking-wide">
+                                                #${String(seq).padStart(2, '0')}
+                                            </span>
+                                            <span class="status-pill px-2.5 py-1 rounded-full text-xs font-bold bg-black/30 backdrop-blur-md text-white/95">
+                                                ${dateStr}
+                                            </span>
+                                        </div>
+
+                                        <div class="relative z-10 flex items-center justify-center my-auto">
+                                            <div class="w-28 h-28 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex flex-col items-center justify-center shadow-xl">
+                                                <span class="text-[11px] uppercase tracking-widest text-white/85 font-semibold">倒數</span>
+                                                <span class="text-5xl font-black text-white leading-none tabular-nums">${countdownDay}</span>
+                                                <span class="text-[11px] text-white/85 font-medium mt-0.5">DAYS</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- 裝飾星光圓弧 -->
+                                        <div class="absolute -right-8 -bottom-8 w-32 h-32 rounded-full bg-white/10 pointer-events-none"></div>
+                                    </div>
+
+                                    <!-- 下半部萌寵頭像與翻轉提示 -->
+                                    <div class="flex-1 p-5 flex flex-col items-center justify-between text-center relative z-10">
+                                        <div>
+                                            <h3 class="text-lg font-extrabold ${palette.text} tracking-wide">
+                                                ${countdownDay === 1 ? '決戰學測日！' : `距離學測倒數第 ${countdownDay} 天`}
+                                            </h3>
+                                            <p class="text-xs text-slate-400 mt-0.5">${dateStr}</p>
+                                        </div>
+
+                                        <!-- 萌寵圖片容器（含載入失敗自動切換 Emoji 備援） -->
+                                        <div class="relative w-24 h-24 rounded-full p-1 bg-gradient-to-br ${palette.grad} shadow-lg my-2">
+                                            <div class="w-full h-full rounded-full overflow-hidden bg-slate-900 flex items-center justify-center">
+                                                <img src="${localImgPath}"
+                                                     alt="第${countdownDay}天Q版萌寵"
+                                                     loading="lazy"
+                                                     class="w-full h-full object-cover"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <div class="hidden w-full h-full items-center justify-center text-4xl select-none bg-slate-800/90">
+                                                    ${petEmoji}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 bg-white/5 px-3.5 py-1.5 rounded-full border border-white/10">
+                                            <i class="fa fa-refresh text-sky-400"></i>
+                                            <span>點擊翻轉看雙語勵志語</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="text-neutral-400 text-[10px] italic">點擊查看激勵語</p>
+
+                                <!-- 卡牌背面（中英文勵志語） -->
+                                <div class="card-face card-back flex flex-col p-5">
+                                    <div class="holo-sheen"></div>
+
+                                    <div class="flex items-center justify-between pb-3 border-b border-white/10 relative z-10">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold border ${palette.badge}">
+                                            倒數第 ${countdownDay} 天
+                                        </span>
+                                        <span class="text-xs text-slate-400 font-medium">${dateStr}</span>
+                                    </div>
+
+                                    <div class="flex-1 overflow-y-auto quote-scroll py-4 flex flex-col justify-center gap-4 relative z-10">
+                                        <div class="text-left">
+                                            <span class="inline-block text-[10px] uppercase tracking-widest text-sky-400 font-bold mb-1">每日中文能量</span>
+                                            <p class="text-slate-100 text-base font-bold leading-relaxed">
+                                                ${item.zh}
+                                            </p>
+                                        </div>
+
+                                        <div class="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+                                        <div class="text-left">
+                                            <span class="inline-block text-[10px] uppercase tracking-widest text-fuchsia-400 font-bold mb-1">Daily Motivation</span>
+                                            <p class="text-slate-300 text-sm italic leading-relaxed">
+                                                "${item.en}"
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="pt-3 border-t border-white/10 flex items-center justify-between relative z-10">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-8 h-8 rounded-full overflow-hidden border ${palette.ring} bg-slate-800 flex items-center justify-center shrink-0">
+                                                <img src="${localImgPath}"
+                                                     alt="萌寵縮圖"
+                                                     loading="lazy"
+                                                     class="w-full h-full object-cover"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <span class="hidden text-base leading-none">${petEmoji}</span>
+                                            </div>
+                                            <span class="text-xs text-slate-400">能量卡 #${seq}</span>
+                                        </div>
+                                        <span class="text-xs text-sky-300 font-medium flex items-center gap-1">
+                                            <i class="fa fa-undo"></i> 點擊翻回
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="bookmark-back h-full flex flex-col bg-neutral-800/90 backdrop-blur-sm p-6 justify-center text-center">
-                            <p class="text-white text-lg leading-relaxed mb-4">${item.zh}</p>
-                            <div class="h-px bg-white/20 my-4"></div>
-                            <p class="text-neutral-300 text-sm italic leading-relaxed">${item.en}</p>
-                            <img src="${localImgPath}" class="w-12 h-12 rounded-full mt-6 self-center border-2 border-${color}">
+
+                            <!-- 鎖定遮罩層（置於 flip-inner 之外，徹底避免阻礙 3D 翻轉） -->
+                            <div class="lock-veil">
+                                <div class="w-16 h-16 rounded-2xl bg-slate-800/90 border border-white/15 flex items-center justify-center mb-4 shadow-xl">
+                                    <i class="fa fa-lock text-2xl ${palette.text}"></i>
+                                </div>
+                                <span class="text-xs uppercase tracking-widest text-slate-400 mb-1">能量蓄力中</span>
+                                <h4 class="text-lg font-bold text-white mb-2">倒數第 ${countdownDay} 天</h4>
+                                <div class="px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-sky-200">
+                                    ${dateStr} 解鎖
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-4">時間到了就會自動開啟喔！</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="lock-overlay"></div>`;
-                cardWrap.addEventListener('click', toggleCardFlip);
-                container.appendChild(cardWrap);
+                    <!-- 底部懸浮光影 -->
+                    <div class="hover-shadow"></div>
+                `;
+
+                // 綁定點擊翻轉事件
+                const flipInner = stage.querySelector('.flip-inner');
+                const lockVeil = stage.querySelector('.lock-veil');
+                const tiltShell = stage.querySelector('.tilt-shell');
+
+                const handleFlip = () => {
+                    if (stage.dataset.locked === 'true' && !previewAllUnlocked) {
+                        tiltShell.classList.remove('shake-feedback');
+                        void tiltShell.offsetWidth;
+                        tiltShell.classList.add('shake-feedback');
+                        showToast(`這張卡牌將於 ${dateStr} 解鎖！可先開啟右上角「預覽全部解鎖」提前觀看`, 'fa-lock text-amber-400');
+                        return;
+                    }
+                    flipInner.classList.toggle('is-flipped');
+                };
+
+                flipInner.addEventListener('click', handleFlip);
+                flipInner.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleFlip();
+                    }
+                });
+
+                lockVeil.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleFlip();
+                });
+
+                // 綁定桌面端滑鼠 3D 磁浮傾斜與全息高光
+                stage.addEventListener('mousemove', (e) => {
+                    if (window.matchMedia('(pointer: coarse)').matches) return;
+                    const rect = tiltShell.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -7;
+                    const rotateY = ((x - centerX) / centerX) * 7;
+
+                    tiltShell.style.transform = `rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+                    stage.style.setProperty('--mx', `${((x / rect.width) * 100).toFixed(1)}%`);
+                    stage.style.setProperty('--my', `${((y / rect.height) * 100).toFixed(1)}%`);
+                });
+
+                stage.addEventListener('mouseleave', () => {
+                    tiltShell.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
+                });
+
+                container.appendChild(stage);
             });
         }
 
+        /* =========================================================
+           更新卡牌解鎖狀態、今日高亮與篩選顯示
+        ========================================================= */
+        function refreshCardStates() {
+            const todayStr = getTodayLocalYMD();
+            const stages = document.querySelectorAll('.card-stage');
+            let unlockedCount = 0;
+            let visibleCount = 0;
+
+            stages.forEach((stage) => {
+                const dateStr = stage.dataset.date;
+                const lockVeil = stage.querySelector('.lock-veil');
+                const statusPill = stage.querySelector('.status-pill');
+
+                const isPast = dateStr < todayStr;
+                const isToday = dateStr === todayStr;
+                const isFuture = dateStr > todayStr;
+
+                stage.dataset.state = isToday ? 'today' : (isPast ? 'past' : 'future');
+                stage.dataset.locked = isFuture ? 'true' : 'false';
+
+                if (isPast || isToday) {
+                    unlockedCount++;
+                }
+
+                // 決定是否解鎖遮罩
+                if (!isFuture || previewAllUnlocked) {
+                    lockVeil.classList.add('is-unlocked');
+                } else {
+                    lockVeil.classList.remove('is-unlocked');
+                    stage.querySelector('.flip-inner').classList.remove('is-flipped');
+                }
+
+                // 今日專屬光環與狀態標籤
+                stage.classList.toggle('today-highlight', isToday);
+                if (isToday) {
+                    statusPill.innerHTML = '<i class="fa fa-star text-yellow-300 mr-1"></i>今日解鎖';
+                    statusPill.className = 'status-pill px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/80 text-white shadow-md';
+                } else if (isPast) {
+                    statusPill.innerHTML = '<i class="fa fa-check-circle text-emerald-300 mr-1"></i>已解鎖';
+                    statusPill.className = 'status-pill px-2.5 py-1 rounded-full text-xs font-bold bg-black/35 text-emerald-200';
+                } else {
+                    statusPill.textContent = dateStr;
+                    statusPill.className = 'status-pill px-2.5 py-1 rounded-full text-xs font-bold bg-black/30 text-white/90';
+                }
+
+                // 套用分類篩選
+                let show = true;
+                if (currentFilter === 'unlocked') {
+                    show = (!isFuture || previewAllUnlocked);
+                } else if (currentFilter === 'today') {
+                    show = isToday;
+                } else if (currentFilter === 'locked') {
+                    show = (isFuture && !previewAllUnlocked);
+                }
+
+                stage.classList.toggle('hidden', !show);
+                if (show) visibleCount++;
+            });
+
+            // 空狀態顯示控制
+            const emptyState = document.getElementById('empty-state');
+            if (emptyState) {
+                emptyState.classList.toggle('hidden', visibleCount > 0);
+            }
+
+            // 更新衝刺進度條
+            const percent = Math.min(100, Math.round((unlockedCount / TOTAL_DAYS) * 100));
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercent = document.getElementById('progress-percent');
+            const progressLabel = document.getElementById('progress-label');
+
+            if (progressBar) progressBar.style.width = `${percent}%`;
+            if (progressPercent) progressPercent.textContent = `${percent}%`;
+            if (progressLabel) {
+                if (unlockedCount === 0) {
+                    progressLabel.textContent = `尚未進入 66 天倒數期（將於 2026-11-17 啟動）`;
+                } else if (unlockedCount >= TOTAL_DAYS) {
+                    progressLabel.textContent = `66 天能量卡已全數解鎖，學測加油！`;
+                } else {
+                    progressLabel.textContent = `已解鎖 ${unlockedCount} / ${TOTAL_DAYS} 張能量卡`;
+                }
+            }
+        }
+
+        /* =========================================================
+           即時倒數計時器（精確到秒，倒數至 2027-01-21 00:00:00）
+        ========================================================= */
+        function startCountdown() {
+            const elDays = document.getElementById('cd-days');
+            const elHours = document.getElementById('cd-hours');
+            const elMinutes = document.getElementById('cd-minutes');
+            const elSeconds = document.getElementById('cd-seconds');
+
+            const pad = (n) => String(n).padStart(2, '0');
+
+            const tick = () => {
+                const now = Date.now();
+                const diff = EXAM_TARGET_LOCAL.getTime() - now;
+
+                if (diff <= 0) {
+                    elDays.textContent = '00';
+                    elHours.textContent = '00';
+                    elMinutes.textContent = '00';
+                    elSeconds.textContent = '00';
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
+
+                elDays.textContent = pad(days);
+                elHours.textContent = pad(hours);
+                elMinutes.textContent = pad(minutes);
+                elSeconds.textContent = pad(seconds);
+            };
+
+            tick();
+            setInterval(tick, 1000);
+        }
+
+        /* =========================================================
+           綁定控制列互動事件
+        ========================================================= */
+        function bindControls() {
+            // 篩選按鈕
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    currentFilter = btn.dataset.filter;
+                    filterBtns.forEach((b) => {
+                        const active = b === btn;
+                        b.className = active
+                            ? 'filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-sky-500 text-white shadow-lg shadow-sky-500/25'
+                            : 'filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10';
+                    });
+                    refreshCardStates();
+                });
+            });
+
+            // 預覽全部解鎖切換
+            const previewToggle = document.getElementById('toggle-preview-all');
+            if (previewToggle) {
+                previewToggle.addEventListener('change', (e) => {
+                    previewAllUnlocked = e.target.checked;
+                    refreshCardStates();
+                    if (previewAllUnlocked) {
+                        showToast('已開啟「預覽全部解鎖」，現在可點擊任意卡牌翻轉查看！', 'fa-unlock text-fuchsia-400');
+                    } else {
+                        showToast('已恢復依照日期自動解鎖模式', 'fa-lock text-sky-400');
+                    }
+                });
+            }
+
+            // 定位今日卡牌按鈕
+            const jumpBtn = document.getElementById('btn-jump-today');
+            if (jumpBtn) {
+                jumpBtn.addEventListener('click', () => {
+                    const todayCard = document.querySelector('.card-stage[data-state="today"]');
+                    if (!todayCard) {
+                        showToast('今天不在 2026-11-17 ～ 2027-01-21 倒數區間內喔！', 'fa-calendar text-amber-400');
+                        return;
+                    }
+                    // 若目前被篩選隱藏，自動切回全部
+                    if (todayCard.classList.contains('hidden')) {
+                        const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+                        if (allBtn) allBtn.click();
+                    }
+                    todayCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    showToast(`已定位至今日卡牌（倒數第 ${todayCard.dataset.day} 天）`, 'fa-star text-yellow-300');
+                });
+            }
+        }
+
+        /* =========================================================
+           輕量 Canvas 星空粒子背景（支援視窗縮放）
+        ========================================================= */
+        function initStarfield() {
+            const canvas = document.getElementById('starfield-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let stars = [];
+            let width = 0, height = 0;
+
+            const resize = () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                const count = Math.min(110, Math.floor((width * height) / 14000));
+                stars = Array.from({ length: count }, () => ({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 1.6 + 0.4,
+                    vx: (Math.random() - 0.5) * 0.22,
+                    vy: (Math.random() - 0.5) * 0.22,
+                    alpha: Math.random() * 0.65 + 0.25
+                }));
+            };
+
+            const draw = () => {
+                ctx.clearRect(0, 0, width, height);
+                for (let i = 0; i < stars.length; i++) {
+                    const s = stars[i];
+                    s.x += s.vx;
+                    s.y += s.vy;
+                    if (s.x < 0) s.x = width;
+                    if (s.x > width) s.x = 0;
+                    if (s.y < 0) s.y = height;
+                    if (s.y > height) s.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(186, 230, 253, ${s.alpha})`;
+                    ctx.fill();
+                }
+                requestAnimationFrame(draw);
+            };
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        }
+
+        // 頁面初始化入口
         document.addEventListener('DOMContentLoaded', () => {
-            generateBookmarks();
-            checkBookmarkLock();
-            initCountdown();
-            if(window.particlesJS) particlesJS("particles-js", {"particles":{"number":{"value":80},"color":{"value":"#0EA5E9"},"opacity":{"value":0.3},"size":{"value":3},"line_linked":{"enable":true,"opacity":0.2},"move":{"enable":true,"speed":1}}});
+            try {
+                generateFloatingCards();
+                refreshCardStates();
+                startCountdown();
+                bindControls();
+                initStarfield();
+            } catch (err) {
+                console.error('初始化倒數計時器時發生錯誤：', err);
+            }
         });
     </script>
 </body>
